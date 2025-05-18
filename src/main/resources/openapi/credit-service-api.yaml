@@ -1,0 +1,295 @@
+openapi: 3.0.1
+info:
+  title: Credit Service API
+  description: API for managing credit products
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082/api
+    description: Local development server
+tags:
+  - name: Credit
+    description: Credit products management
+
+paths:
+  /credits:
+    get:
+      tags: [ Credit ]
+      summary: Get all credit products
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditResponse'
+    post:
+      tags: [ Credit ]
+      summary: Create new credit product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditRequest'
+      responses:
+        '201':
+          description: Credit created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '400':
+          description: Invalid credit type for customer
+
+  /credits/{id}:
+    get:
+      tags: [ Credit ]
+      summary: Get credit by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "credit123"
+      responses:
+        '200':
+          description: Credit found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '404':
+          description: Credit not found
+    put:
+      tags: [ Credit ]
+      summary: Update credit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "credit123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditUpdateRequest'
+      responses:
+        '200':
+          description: Credit updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '404':
+          description: Credit not found
+    delete:
+      tags: [ Credit ]
+      summary: Delete credit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "credit123"
+      responses:
+        '204':
+          description: Credit deleted
+        '404':
+          description: Credit not found
+
+  /credits/customer/{customerId}:
+    get:
+      tags: [ Credit ]
+      summary: Get credits by customer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "cust789"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditResponse'
+
+  /credits/{creditId}/charge:
+    post:
+      tags: [ Credit ]
+      summary: Charge credit card
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "credit123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditChargeRequest'
+      responses:
+        '200':
+          description: Charge successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '400':
+          description: Invalid charge
+
+  /credits/{creditId}/payment:
+    post:
+      tags: [ Credit ]
+      summary: Make credit payment
+      parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "credit123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditPaymentRequest'
+      responses:
+        '200':
+          description: Payment successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditResponse'
+        '400':
+          description: Invalid payment
+
+components:
+  schemas:
+    CreditRequest:
+      type: object
+      required:
+        - customerId
+        - type
+      properties:
+        customerId:
+          type: string
+          example: "cust789"
+        type:
+          type: string
+          enum: [ PERSONAL_LOAN, BUSINESS_LOAN, PERSONAL_CREDIT_CARD, BUSINESS_CREDIT_CARD ]
+          example: "PERSONAL_LOAN"
+        approvedAmount:
+          type: number
+          minimum: 0
+          example: 10000.00
+        interestRate:
+          type: number
+          minimum: 0
+          example: 5.5
+        termMonths:
+          type: integer
+          minimum: 1
+          example: 24
+        creditLimit:
+          type: number
+          minimum: 0
+          example: 5000.00
+
+    CreditUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ ACTIVE, CLOSED, DELINQUENT ]
+          example: "ACTIVE"
+        creditLimit:
+          type: number
+          minimum: 0
+          example: 7500.00
+
+    CreditResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "credit123"
+        customerId:
+          type: string
+          example: "cust789"
+        type:
+          type: string
+          example: "PERSONAL_LOAN"
+        creditNumber:
+          type: string
+          example: "LOAN-2023-12345"
+        approvedAmount:
+          type: number
+          example: 10000.00
+        balance:
+          type: number
+          example: 8500.00
+        interestRate:
+          type: number
+          example: 5.5
+        startDate:
+          type: string
+          format: date
+          example: "2023-01-15"
+        endDate:
+          type: string
+          format: date
+          example: "2025-01-15"
+        status:
+          type: string
+          example: "ACTIVE"
+        monthlyPayment:
+          type: number
+          example: 450.75
+        creditLimit:
+          type: number
+          example: 5000.00
+        usedCredit:
+          type: number
+          example: 3200.00
+
+    CreditChargeRequest:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          type: number
+          minimum: 0.01
+          example: 150.50
+        description:
+          type: string
+          example: "Comercial carlos"
+
+    CreditPaymentRequest:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          type: number
+          minimum: 0.01
+          example: 200.00
+        description:
+          type: string
+          example: "Pago mensual"
