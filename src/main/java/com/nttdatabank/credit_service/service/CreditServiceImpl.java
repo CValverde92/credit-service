@@ -2,8 +2,8 @@ package com.nttdatabank.credit_service.service;
 
 import com.nttdatabank.credit_service.dao.*;
 import com.nttdatabank.credit_service.exception.BusinessException;
+import com.nttdatabank.credit_service.model.*;
 import com.nttdatabank.credit_service.repository.CreditRepository;
-import com.nttdatabank.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

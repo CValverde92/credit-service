@@ -1,9 +1,10 @@
 package com.nttdatabank.credit_service.controller;
 
-import com.nttdatabank.api.CreditsApi;
+
+import com.nttdatabank.credit_service.api.CreditsApi;
 import com.nttdatabank.credit_service.exception.BusinessException;
+import com.nttdatabank.credit_service.model.*;
 import com.nttdatabank.credit_service.service.CreditService;
-import com.nttdatabank.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

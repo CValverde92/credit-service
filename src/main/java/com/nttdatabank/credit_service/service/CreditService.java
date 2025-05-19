@@ -1,6 +1,6 @@
 package com.nttdatabank.credit_service.service;
 
-import com.nttdatabank.model.*;
+import com.nttdatabank.credit_service.model.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
