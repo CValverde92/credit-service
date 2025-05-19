@@ -13,6 +13,7 @@ tags:
 paths:
   /credits:
     get:
+      operationId: getAllCredits
       tags: [ Credit ]
       summary: Get all credit products
       responses:
@@ -25,6 +26,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/CreditResponse'
     post:
+      operationId: createCredit
       tags: [ Credit ]
       summary: Create new credit product
       requestBody:
@@ -45,6 +47,7 @@ paths:
 
   /credits/{id}:
     get:
+      operationId: getCreditById
       tags: [ Credit ]
       summary: Get credit by ID
       parameters:
@@ -64,6 +67,7 @@ paths:
         '404':
           description: Credit not found
     put:
+      operationId: updateCreditById
       tags: [ Credit ]
       summary: Update credit
       parameters:
@@ -89,6 +93,7 @@ paths:
         '404':
           description: Credit not found
     delete:
+      operationId: deleteCreditById
       tags: [ Credit ]
       summary: Delete credit
       parameters:
@@ -106,6 +111,7 @@ paths:
 
   /credits/customer/{customerId}:
     get:
+      operationId: getCreditsByCustomerId
       tags: [ Credit ]
       summary: Get credits by customer
       parameters:
@@ -127,6 +133,7 @@ paths:
 
   /credits/{creditId}/charge:
     post:
+      operationId: chargeCredit
       tags: [ Credit ]
       summary: Charge credit card
       parameters:
@@ -154,6 +161,7 @@ paths:
 
   /credits/{creditId}/payment:
     post:
+      operationId: makeCreditPayment
       tags: [ Credit ]
       summary: Make credit payment
       parameters:
