@@ -293,11 +293,23 @@ components:
       type: object
       required:
         - amount
+        - paymentMethod
       properties:
         amount:
           type: number
           minimum: 0.01
           example: 200.00
+          description: "Monto del pago (mayor a 0)"
         description:
           type: string
           example: "Pago mensual"
+          nullable: true
+        paymentMethod:
+          type: string
+          example: "TRANSFER"
+          enum:
+            - TRANSFER
+            - CASH
+            - CREDIT_CARD
+            - DEBIT_CARD
+          description: "Método de pago utilizado"

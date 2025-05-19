@@ -4,6 +4,9 @@ import com.nttdatabank.credit_service.model.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Service interface for credit operations
+ */
 public interface CreditService {
     Mono<CreditResponse> create(CreditRequest request);
 

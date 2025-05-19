@@ -8,24 +8,24 @@ import com.nttdatabank.credit_service.service.CreditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.math.BigDecimal;
 
+/**
+ * Controller for credit operations
+ */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/credits")
 public class CreditController implements CreditsApi {
     private final CreditService creditService;
 
+    // Create new credit
     @Override
     public Mono<ResponseEntity<CreditResponse>> createCredit(
             @Valid @RequestBody Mono<CreditRequest> creditRequest,
@@ -36,6 +36,7 @@ public class CreditController implements CreditsApi {
                 .onErrorResume(this::handleError);
     }
 
+    // Delete credit by ID
     @Override
     public Mono<ResponseEntity<Void>> deleteCreditById(
             @PathVariable("id") String id,
@@ -44,6 +45,7 @@ public class CreditController implements CreditsApi {
                 .thenReturn(ResponseEntity.noContent().build());
     }
 
+    // Get credit by ID
     @Override
     public Mono<ResponseEntity<CreditResponse>> getCreditById(
             @PathVariable("id") String id,
@@ -53,11 +55,13 @@ public class CreditController implements CreditsApi {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    // Get all credits
     @Override
     public Mono<ResponseEntity<Flux<CreditResponse>>> getAllCredits(final ServerWebExchange exchange) {
         return Mono.just(ResponseEntity.ok(creditService.findAll()));
     }
 
+    // Update credit by ID
     @Override
     public Mono<ResponseEntity<CreditResponse>> updateCreditById(
             @PathVariable("id") String id,
@@ -71,6 +75,7 @@ public class CreditController implements CreditsApi {
                         Mono.just(ResponseEntity.badRequest().build()));
     }
 
+    // Get credits by customer ID
     @Override
     public Mono<ResponseEntity<Flux<CreditResponse>>> getCreditsByCustomerId(
             @PathVariable("customerId") String customerId,
@@ -78,6 +83,7 @@ public class CreditController implements CreditsApi {
         return Mono.just(ResponseEntity.ok(creditService.findByCustomerId(customerId)));
     }
 
+    // Charge amount to credit
     @Override
     public Mono<ResponseEntity<CreditResponse>> chargeCredit(
             @PathVariable("creditId") String creditId,
@@ -95,6 +101,7 @@ public class CreditController implements CreditsApi {
                 });
     }
 
+    // Make payment to credit
     @Override
     public Mono<ResponseEntity<CreditResponse>> makeCreditPayment(
             @PathVariable("creditId") String creditId,
@@ -112,6 +119,7 @@ public class CreditController implements CreditsApi {
                 });
     }
 
+    // Handle errors
     public <T> Mono<ResponseEntity<T>> handleError(Throwable e) {
         if (e instanceof BusinessException) {
             return Mono.just(ResponseEntity.badRequest().build());
@@ -119,5 +127,12 @@ public class CreditController implements CreditsApi {
             return Mono.just(ResponseEntity.badRequest().build());
         }
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    }
+
+    // Get available credit limit
+    @GetMapping("/{creditId}/available-limit")
+    public Mono<BigDecimal> getAvailableCreditLimit(@PathVariable String creditId) {
+        return creditService.findById(creditId)
+                .map(credit -> credit.getCreditLimit().subtract(credit.getUsedCredit()));
     }
 }
